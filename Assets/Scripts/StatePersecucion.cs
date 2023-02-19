@@ -16,8 +16,9 @@ public class StatePersecucion : StateDrivenFSM
         
         if (agent.playerSeen)
         {
-            agent.timeInChase = agent.timeInChase;
+            agent.timerToChase = agent.timeInChase;
             currTarget = agent.target.position;
+            agent.soundTargetPosition = currTarget;
         }
 
         agent.timerToChase -= Time.deltaTime;
@@ -25,9 +26,10 @@ public class StatePersecucion : StateDrivenFSM
         if (agent.timerToChase < 0)
         {
             agent.timerToFind = agent.timeInAlert;
+            agent.spot.color = Color.yellow;
             agent.currentState = new StateAlerta();
         }
 
-        //agent.navAgent.destination = currTarget;
+        agent.navAgent.destination = currTarget;
     }
 }

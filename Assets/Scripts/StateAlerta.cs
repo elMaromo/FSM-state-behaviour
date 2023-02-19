@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class StateAlerta : StateDrivenFSM
 {
-    
     public override void Execute(CAgent agent)
     {
         
@@ -16,6 +15,8 @@ public class StateAlerta : StateDrivenFSM
         agent.timerToFind -= Time.deltaTime;
         if (agent.timerToFind < 0)
         {
+            agent.spot.color = Color.green;
+            agent.navAgent.destination = agent.patrolPoints[agent.patrolIndex].position;
             agent.currentState = new StatePatrulla();
         }
 
@@ -23,6 +24,7 @@ public class StateAlerta : StateDrivenFSM
         
         if (agent.playerSeen)
         {
+            agent.spot.color = Color.red;
             agent.timerToChase = agent.timeInChase;
             agent.currentState = new StatePersecucion();
         }

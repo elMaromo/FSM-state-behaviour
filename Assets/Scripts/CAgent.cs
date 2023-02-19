@@ -6,29 +6,27 @@ using UnityEngine.AI;
 public class CAgent : MonoBehaviour
 {
     public NavMeshAgent navAgent;
-    public List<Transform> PatrolPoints;
+    public List<Transform> patrolPoints;
     public Transform target;
-    public LayerMask layerPlayer;
-    public float speed;
-    public float rotateSpeed;
-    public float soundDistance;
-    public float viewDistance;
-    public float timeInAlert;
-    public float timeInChase;
+    public float rotateSpeed, soundDistance, viewDistance, timeInAlert, timeInChase;
+    public GameObject spotLigth;
 
     [HideInInspector]public StateDrivenFSM currentState;
-    [HideInInspector]public float timerToFind;
-    [HideInInspector]public float timerToChase;
-    [HideInInspector] public Vector3 soundTargetPosition;
-    private int nextPatrolIndex;
+    [HideInInspector]public float timerToFind, timerToChase;
+    [HideInInspector] public Vector3 soundTargetPosition, lastFramePosAgent;
+    [HideInInspector] public int patrolIndex;
     [HideInInspector] public bool playerHeard, playerSeen;
-    [HideInInspector] public Vector3 lastFramePosAgent;
-    private RaycastHit hit;
+    [HideInInspector] public Light spot;
+
     
     void Start()
     {
+        spot = spotLigth.GetComponent<Light>();
         navAgent = GetComponent<NavMeshAgent>();
+        spot.color = Color.green;
         currentState = new StatePatrulla();
+        patrolIndex = 0;
+        navAgent.destination = patrolPoints[patrolIndex].position;
         lastFramePosAgent = transform.position;
         playerHeard = false;
         playerSeen = false;
@@ -52,26 +50,23 @@ public class CAgent : MonoBehaviour
                 playerHeard = true;
             }
         }
-        
 
         Vector3 localTarget = transform.InverseTransformPoint(target.transform.position);
         float targetAngle = Mathf.Atan2(localTarget.x, localTarget.z) * Mathf.Rad2Deg;
-        //Debug.Log(targetAngle);
         if (targetAngle < 30 && targetAngle > -30)
         {
             Vector3 rayOrigin = transform.position + new Vector3(0, 0.5f, 0);
             Vector3 directionRay = target.transform.position - transform.position;
             Ray rayFordward = new Ray(rayOrigin, directionRay);
+            RaycastHit hit;
             if (Physics.Raycast(rayFordward, out hit, viewDistance))
             {
-                if (hit.collider.gameObject.layer == layerPlayer)
+                if (hit.collider.gameObject.CompareTag("Player"))
                 {
                     playerSeen = true;
-                    Debug.Log("te veo");
                 }
             }
         }
-
-        
     }
+
 }
